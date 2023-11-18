@@ -11,22 +11,19 @@ const db = mysql.createConnection({
     user: "root",
     password: "",
     database: "eventos",
-    port: 3309
+    port: 3309,
 });
 
-app.get("/create", (req, res) => {
-    const nombre = req.body.nombre;
-    const hora = req.body.hora;
-    const fecha = req.body.fecha;
-    const direccion = req.body.direccion;
-    const estado = req.body.estado;
-    const precio = req.body.precio;
-    const contacto = req.body.contacto
+app.post("/create", (req, res) => {
+    const { nombre, hora, fecha, direccion, estado, precio, contacto } = req.body;
 
-    db.query('INSERT INTO eventos(nombre,hora,fecha,direccion,estado,precio,contacto) VALUES(?,?,?,?,?,?,?)', [nombre, hora, fecha, direccion, estado, precio, contacto],
+    db.query(
+        'INSERT INTO eventos(nombre, hora, fecha, direccion, estado, precio, contacto) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [nombre, hora, fecha, direccion, estado, precio, contacto],
         (err, result) => {
             if (err) {
                 console.log(err);
+                res.status(500).send("NO SE REGISTRO");
             } else {
                 res.send(result);
             }
@@ -35,19 +32,17 @@ app.get("/create", (req, res) => {
 });
 
 app.get("/eventos", (req, res) => {
-
-    db.query('SELECT * FROM eventos',
-        (err, result) => {
-            if (err) {
-                console.log(err);
-            } else {
-                res.send(result);
-            }
+    db.query('SELECT * FROM eventos', (err, result) => {
+        if (err) {
+            console.log(err);
+            res.status(500).send("NO SE ENCONTRARON");
+        } else {
+            res.send(result);
         }
-    );
+    });
 });
 
-
-app.listen(3001, () => {
-    console.log("Usted esta corriendo el puerto 3001")
-})
+const PORT = 3001;
+app.listen(PORT, () => {
+    console.log(`Servidor corriendo en el puerto ${PORT}`);
+});
